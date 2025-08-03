@@ -1,1 +1,34 @@
 
+from flask import Flask, request, jsonify
+
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return "مرحباً بك في مشروع API لإشارات التداول من منصة MT5"
+
+@app.route('/signal', methods=['POST'])
+def receive_signal():
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "لم يتم إرسال بيانات صحيحة"}), 400
+
+    # مثال: استخرج بعض الحقول من البيانات الواردة
+    symbol = data.get('symbol')
+    action = data.get('action')  # شراء أو بيع مثلاً
+    price = data.get('price')
+
+    # هنا يمكنك تخزين البيانات أو إرسالها لنظام آخر حسب الحاجة
+    # حالياً نعيد البيانات كاستجابة تأكيد
+    response = {
+        "message": "تم استقبال إشارة التداول بنجاح",
+        "data": {
+            "symbol": symbol,
+            "action": action,
+            "price": price
+        }
+    }
+    return jsonify(response), 200
+
+if __name__ == "__main__":
+    app.run(host='0.0.0.0', port=5000)
